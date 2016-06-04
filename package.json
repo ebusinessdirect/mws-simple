@@ -1,0 +1,32 @@
+{
+  "name": "mws-simple",
+  "version": "1.0.0",
+  "description": "nodejs Amazon MWS API in 100 lines of code",
+  "main": "mws-simple.js",
+  "dependencies": {
+    "query-string": "^4.1.0",
+    "request": "^2.72.0",
+    "xml2js": "^0.4.16"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ebusinessdirect/mws-simple.git"
+  },
+  "keywords": [
+    "amazon",
+    "amazon.com",
+    "mws",
+    "seller",
+    "marketplace"
+  ],
+  "author": "Roger Endo <roger.endo@e-businessdirect.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ebusinessdirect/mws-simple/issues"
+  },
+  "homepage": "https://github.com/ebusinessdirect/mws-simple#readme"
+}
