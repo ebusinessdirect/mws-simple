@@ -4,7 +4,8 @@
 'use strict';
 let crypto = require('crypto');
 let request = require('request');
-let parseString = require('xml2js').parseString;
+let xmlParser = require('xml2js').parseString;
+let tabParser = require('node-csv-parse');
 let qs = require('query-string');
 
 // Client is the class constructor
@@ -41,7 +42,10 @@ Client.prototype.request = function(requestData, callback) {
     requestData.query.AWSAccessKeyId = this.accessKeyId;
   }
   if (!requestData.query.SellerId) {
-    requestData.query.SellerId = this.merchantId
+    requestData.query.SellerId = this.merchantId;
+  }
+  if (!requestData.responseFormat) {
+    requestData.responseFormat = 'xml';
   }
 
   // Create the Canonicalized Query String
@@ -67,7 +71,7 @@ Client.prototype.request = function(requestData, callback) {
     options.headers['User-Agent'] = appId + '/' + appVersionId + ' (Language=JavaScript)';
   }
 
-  // Use specified Content-Type or assume one 
+  // Use specified Content-Type or assume one
   if (requestData.headers && requestData.headers['Content-Type']) {
     options.headers['Content-Type'] = requestData.headers['Content-Type'];
   } else if (requestData.feedContent) {
@@ -89,9 +93,16 @@ Client.prototype.request = function(requestData, callback) {
   // Make call to MWS
   request.post(options, function (error, response, body) {
     if (error) callback(error);
-    // xml2js
-    parseString(body, function (err, result) {
-      callback(err, result);
-    });
+
+    if (response.headers['content-type'] == 'text/xml') {
+      // xml2js
+      xmlParser(body, function (err, result) {
+        callback(err, result);
+      });
+    } else {
+      // currently only other type of data returned is tab-delimited text
+      var resultArr = tabParser(body, '\t').asObjects();
+      callback(null, resultArr);
+    }
   });
 };

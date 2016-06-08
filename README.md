@@ -14,8 +14,8 @@ npm install mws-simple
 ### List Orders (open and created in last 24 hours):
 ``` javascript
 let mws = require('mws-simple')({
-  accessKeyId: YOUR ACCESS KEY
-  secretAccessId: YOUR ACCESS KEY
+  accessKeyId: YOUR ACCESS KEY,
+  secretAccessKey: YOUR ACCESS KEY,
   merchantId: YOUR MERCHANT ID
 });
 
