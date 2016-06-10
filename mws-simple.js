@@ -94,7 +94,7 @@ Client.prototype.request = function(requestData, callback) {
   request.post(options, function (error, response, body) {
     if (error) callback(error);
 
-    if (response.headers['content-type'] == 'text/xml') {
+    if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].startsWith('text/xml')) {
       // xml2js
       xmlParser(body, function (err, result) {
         callback(err, result);
