@@ -5,7 +5,7 @@
 let crypto = require('crypto');
 let request = require('request');
 let xmlParser = require('xml2js').parseString;
-let tabParser = require('node-csv-parse');
+let tabParser = require('csv-parse');
 let qs = require('query-string');
 
 // Client is the class constructor
@@ -101,8 +101,11 @@ Client.prototype.request = function(requestData, callback) {
       });
     } else {
       // currently only other type of data returned is tab-delimited text
-      var resultArr = tabParser(body, '\t').asObjects();
-      callback(null, resultArr);
+      tabParser(body, {
+        delimiter:'\t',
+        columns: true,
+        relax: true
+      }, callback);
     }
   });
 };
