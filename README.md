@@ -11,7 +11,7 @@ npm install mws-simple
 
 ## Usage
 
-1.  Initialize.
+###### Initialize
 
 ``` javascript
 let mws = require('mws-simple')({
@@ -21,7 +21,7 @@ let mws = require('mws-simple')({
 });
 ```
 
-2.  Build a request object containing `query` and optionally `path`, `headers`, and `feedContent`.  
+###### Build a request object containing `query` and optionally `path`, `headers`, and `feedContent`
 
 Of the [required parameters](http://docs.developer.amazonservices.com/en_US/dev_guide/DG_RequiredRequestParameters.html), `AWSAccessKeyId`, `SellerId`, `Signature`, `SignatureMethod`,  `SignatureVersion`, and `Timestamp` will be taken care of but most can be overridden.  This leaves `Action`, `MWSAuthToken` (for web applications and third-party developer authorizations only), and `Version` required to be populated.
 
@@ -31,7 +31,7 @@ If the API has an endpoint as specified in the documentation, put the endpoint i
 
 For uploading data to MWS, populate `feedContent` with a `buffer` of data.
 
-3.  Invoke `request` with your request object.
+###### Invoke `request` with your request object.
 
 ## Examples
 
