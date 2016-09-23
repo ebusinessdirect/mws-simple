@@ -92,7 +92,7 @@ Client.prototype.request = function(requestData, callback) {
 
   // Make call to MWS
   request.post(options, function (error, response, body) {
-    if (error) callback(error);
+    if (error) return callback(error);
 
     if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].startsWith('text/xml')) {
       // xml2js
