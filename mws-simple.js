@@ -7,6 +7,7 @@ let request = require('request');
 let xmlParser = require('xml2js').parseString;
 let tabParser = require('csv-parse');
 let qs = require('query-string');
+let fs = require('fs');
 
 // Client is the class constructor
 module.exports = Client;
@@ -92,7 +93,7 @@ Client.prototype.request = function(requestData, callback) {
 
   // Make call to MWS
   request.post(options, function (error, response, body) {
-    if (error) callback(error);
+    if (error) return callback(error);
 
     if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].startsWith('text/xml')) {
       // xml2js
@@ -100,6 +101,10 @@ Client.prototype.request = function(requestData, callback) {
         callback(err, result);
       });
     } else {
+			// fs.writeFile('./inventory-health.csv', body, (err) => {
+			// 	if (err) return console.log(err)
+			// 	console.log('wrote csv file');
+			// });
       // currently only other type of data returned is tab-delimited text
       tabParser(body, {
         delimiter:'\t',
