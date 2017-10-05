@@ -107,7 +107,7 @@ Client.prototype.request = function(requestData, callback) {
       // Feed Processing Summaries are pure text data.
       // They are not tab-delimited.
       callback(undefined, body);
-    }} else {
+    } else {
       // currently only other type of data returned is tab-delimited text
       tabParser(body, {
         delimiter:'\t',
