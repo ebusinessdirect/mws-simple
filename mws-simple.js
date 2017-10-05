@@ -105,8 +105,8 @@ Client.prototype.request = function(requestData, callback) {
       });
     } else if( typeof body === 'string' && body.startsWith('Feed Processing Summary') ){
       // Feed Processing Summaries are pure text data.
-	  // They are not tab-delimited.
-	  callback(undefined, body);
+      // They are not tab-delimited.
+      callback(undefined, body);
     }} else {
       // currently only other type of data returned is tab-delimited text
       tabParser(body, {
