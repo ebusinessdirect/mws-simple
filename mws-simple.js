@@ -19,12 +19,13 @@ function Client(opts) {
   // force 'new' constructor
   if (!(this instanceof Client)) return new Client(opts);
 
-  this.host = opts.host || 'mws.amazonservices.com';
-  this.port = opts.port || 443
+  this.host = opts && opts.host || 'mws.amazonservices.com';
+  this.port = opts && opts.port || 443
 
-  if (opts.accessKeyId) this.accessKeyId = opts.accessKeyId;
-  if (opts.secretAccessKey) this.secretAccessKey = opts.secretAccessKey;
-  if (opts.merchantId) this.merchantId = opts.merchantId;
+  if (opts && opts.accessKeyId) this.accessKeyId = opts.accessKeyId;
+  if (opts && opts.secretAccessKey) this.secretAccessKey = opts.secretAccessKey;
+  if (opts && opts.merchantId) this.merchantId = opts.merchantId;
+  if (opts && opts.authToken) this.authToken = opts.authToken;
 }
 
 //
@@ -46,6 +47,9 @@ Client.prototype.request = function(requestData, callback) {
   }
   if (!requestData.responseFormat) {
     requestData.responseFormat = 'xml';
+  }
+  if (!requestData.query.MWSAuthToken && this.authToken) {
+    requestData.query.MWSAuthToken = this.authToken;
   }
 
   // Create the Canonicalized Query String

@@ -1,6 +1,6 @@
 {
   "name": "mws-simple",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "nodejs Amazon MWS API in 100 lines of code",
   "main": "mws-simple.js",
   "dependencies": {
@@ -9,9 +9,14 @@
     "request": "^2.72.0",
     "xml2js": "^0.4.16"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^4.0.1",
+    "chai": "^4.1.2",
+    "nyc": "^11.3.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --timeout=5000",
+    "coverage": "./node_modules/.bin/nyc --reporter=lcov ./node_modules/.bin/mocha --timeout=5000"
   },
   "repository": {
     "type": "git",
@@ -29,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/ebusinessdirect/mws-simple/issues"
   },
-  "homepage": "https://github.com/ebusinessdirect/mws-simple#readme"
+  "homepage": "https://github.com/ebusinessdirect/mws-simple#readme",
+  "contributors": [
+    "Eric Blade <blade.eric@gmail.com> (http://www.ericblade.us/phpbb/)"
+  ]
 }
