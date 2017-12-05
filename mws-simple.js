@@ -101,6 +101,9 @@ Client.prototype.request = function(requestData, callback) {
   // Make call to MWS
   request.post(options, function (error, response, body) {
     if (error) return callback(error);
+    if (response.statusCode < 200 || response.statusCode > 299) {
+      return callback(new Error(response.statusCode + ' ' + response.statusMessage + ' ' + response.body));
+    }
 
     if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].startsWith('text/xml')) {
       // xml2js
