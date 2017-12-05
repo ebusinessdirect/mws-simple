@@ -90,10 +90,38 @@ describe('Requirements to perform API tests', () => {
 describe('API tests', () => {
     let mwsApi = {};
     beforeEach(() => mwsApi = new MWS(keys));
-    it('fill in API tests after initial commit', function test() {
+    // TODO: test response from bad API call:
+    // {"ErrorResponse":{"$":{"xmlns":"https://mws.amazonservices.com/JunkTest/2011-07-01"},"Error":[{"Type":["Sender"],"Code":["InvalidAddress"],"Message":["Operation ListMarketplaces is not available for section Sellers/2011-07-01"]}],"RequestID":["736ecd92-d162-4094-9e33-4bf2d0c6bc9c"]}}
+    it('test /Sellers/2011-07-01 ListMarketplaceParticipations', function test(done) {
         if (SkipAPITests) {
             this.skip();
             return false;
         }
+        const query = {
+            path: '/Sellers/2011-07-01',
+            query: {
+                Action: 'ListMarketplaceParticipations',
+                Version: '2011-07-01',
+            },
+        };
+        mwsApi.request(query, (err, result) => {
+            // console.warn('* result=', JSON.stringify(result, null, 4));
+            if (err) {
+                done(err);
+                return false;
+            }
+            expect(result).to.be.an('object').and.contain.key('ListMarketplaceParticipationsResponse');
+            const response = result.ListMarketplaceParticipationsResponse;
+            expect(response).to.be.an('object').and.contain.keys(
+                '$',
+                'ListMarketplaceParticipationsResult',
+                'ResponseMetadata',
+            );
+            expect(response.$.xmlns).to.be.a('string').and.equal('https://mws.amazonservices.com/Sellers/2011-07-01');
+            // TODO: we could stand to fill out the tests of received data a little more fully.
+            expect(response.ListMarketplaceParticipationsResult).to.be.an('array').with.lengthOf(1);
+            expect(response.ResponseMetadata).to.be.an('array').with.lengthOf(1);
+            done();
+        });
     });
 });

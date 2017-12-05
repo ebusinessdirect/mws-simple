@@ -1,3 +1,4 @@
+[![codebeat badge](https://codebeat.co/badges/8645439c-2be6-4c45-acca-aaf6ac449531)](https://codebeat.co/projects/github-com-ericblade-mws-simple-master)
 # mws-simple
 
 nodejs Amazon MWS API in 100 lines of code
