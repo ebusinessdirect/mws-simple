@@ -1,9 +1,12 @@
 [![codebeat badge](https://codebeat.co/badges/8645439c-2be6-4c45-acca-aaf6ac449531)](https://codebeat.co/projects/github-com-ericblade-mws-simple-master)
 # mws-simple
 
-nodejs Amazon MWS API in 100 lines of code
+nodejs Amazon MWS API in (about) 100 lines of code
 
 which means that you will have to do more work in order to make api calls but gives you the most control.  Response uses xml2js or csv-parse for conversion.
+
+If you are looking to do something with MWS, but not involve yourself in all the raw data handling,
+you may want to have a look at mws-advanced: http://www.github.com/ericblade/mws-advanced
 
 Defaults to US marketplace settings, but can code to override default
 ## Installation
