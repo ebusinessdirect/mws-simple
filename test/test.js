@@ -99,14 +99,16 @@ describe('Requirements to perform API tests', () => {
 
 describe('API tests', () => {
     let mwsApi = {};
-    beforeEach(() => mwsApi = new MWS(keys));
+    beforeEach(() => {
+        if (SkipAPITests) {
+            return this.skip();
+        } else {
+            mwsApi = new MWS(keys);
+        }
+    });
     // TODO: test response from bad API call:
     // {"ErrorResponse":{"$":{"xmlns":"https://mws.amazonservices.com/JunkTest/2011-07-01"},"Error":[{"Type":["Sender"],"Code":["InvalidAddress"],"Message":["Operation ListMarketplaces is not available for section Sellers/2011-07-01"]}],"RequestID":["736ecd92-d162-4094-9e33-4bf2d0c6bc9c"]}}
     it('test /Sellers/2011-07-01 ListMarketplaceParticipations', function test(done) {
-        if (SkipAPITests) {
-            this.skip();
-            return false;
-        }
         const query = {
             path: '/Sellers/2011-07-01',
             query: {
@@ -131,6 +133,35 @@ describe('API tests', () => {
             // TODO: we could stand to fill out the tests of received data a little more fully.
             expect(response.ListMarketplaceParticipationsResult).to.be.an('array').with.lengthOf(1);
             expect(response.ResponseMetadata).to.be.an('array').with.lengthOf(1);
+            done();
+        });
+    });
+    it('test /Products/2011-10-01 GetLowestPricedOffersForASIN', function testLowestPricedOffersASIN(done) {
+        const query = {
+            path: '/Products/2011-10-01',
+            query: {
+                Action: 'GetLowestPricedOffersForASIN',
+                Version: '2011-10-01',
+                MarketplaceId: 'ATVPDKIKX0DER',
+                ASIN: '1844161668',
+                ItemCondition: 'New',
+            },
+        };
+        mwsApi.request(query, (err, result) => {
+            if (err) {
+                done(err);
+                return;
+            }
+            // Array length 0 = problem https://github.com/ericblade/mws-simple/issues/1
+            expect(result).to.not.be.an('array');
+            expect(result).to.be.an('object').and.contain.key('GetLowestPricedOffersForASINResponse');
+            const response = result.GetLowestPricedOffersForASINResponse;
+            expect(response).to.be.an('object').and.contain.keys(
+                '$',
+                'GetLowestPricedOffersForASINResult',
+                'ResponseMetadata',
+            );
+            expect(response.$.xmlns).to.be.a('string').and.equal('http://mws.amazonservices.com/schema/Products/2011-10-01');
             done();
         });
     });

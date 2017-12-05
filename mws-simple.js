@@ -68,7 +68,7 @@ Client.prototype.request = function(requestData, callback) {
     headers: {
       Host: this.host,
     },
-    qs: requestData.query
+    form: requestData.query,
   }
 
   // Use specified User-Agent or assume one
@@ -104,8 +104,9 @@ Client.prototype.request = function(requestData, callback) {
     if (response.statusCode < 200 || response.statusCode > 299) {
       return callback(new Error(response.statusCode + ' ' + response.statusMessage + ' ' + response.body));
     }
+    // console.warn('**** content-type', response.headers['content-type']);
 
-    if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].startsWith('text/xml')) {
+    if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].endsWith('/xml')) {
       // xml2js
       xmlParser(body, function (err, result) {
         callback(err, result);
