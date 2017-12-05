@@ -106,7 +106,7 @@ Client.prototype.request = function(requestData, callback) {
     }
     // console.warn('**** content-type', response.headers['content-type']);
 
-    if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].endsWith('/xml')) {
+    if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].indexOf('/xml') !== -1) {
       // xml2js
       xmlParser(body, function (err, result) {
         callback(err, result);
