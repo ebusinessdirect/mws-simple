@@ -3,6 +3,8 @@ const chai = require('chai');
 
 const expect = chai.expect;
 
+const packageInfo = require('../package.json');
+
 describe('Sanity', () => {
     it ('true is true', (done) => {
         expect(true).to.equal(true);
@@ -27,13 +29,19 @@ describe('Sanity', () => {
         expect(mws).to.include.all.keys(
             'host',
             'port',
+            'appId',
+            'appVersionId',
         );
         expect(mws.host).to.equal('mws.amazonservices.com');
         expect(mws.port).to.equal(443);
+        expect(mws.appId).to.equal(packageInfo.name);
+        expect(mws.appVersionId).to.equal(packageInfo.version);
         done();
     });
     it ('new mws object retains the keys it was constructed with', (done) => {
         const mws = new MWS({
+            appId: 'testAppId',
+            appVersionId: '1.0.0',
             host: 'testHost',
             port: 444,
             accessKeyId: 'accessKey',
@@ -47,6 +55,8 @@ describe('Sanity', () => {
             'merchantId',
             'authToken'
         );
+        expect(mws.appId).to.equal('testAppId');
+        expect(mws.appVersionId).to.equal('1.0.0');
         expect(mws.host).to.equal('testHost');
         expect(mws.port).to.equal(444);
         expect(mws.accessKeyId).to.equal('accessKey');

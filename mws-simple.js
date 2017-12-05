@@ -7,17 +7,21 @@ let request = require('request');
 let xmlParser = require('xml2js').parseString;
 let tabParser = require('csv-parse');
 let qs = require('query-string');
+let packageInfo = require('./package.json');
 
 // Client is the class constructor
 module.exports = Client;
 
 // Used for User-Agent header
-let appId = 'mws-simple';
-let appVersionId = '1.0.0';
+let appId = packageInfo.name; // name from file: ex. mws-simple
+let appVersionId = packageInfo.version; // version from file: ex. 1.0.4
 
 function Client(opts) {
   // force 'new' constructor
   if (!(this instanceof Client)) return new Client(opts);
+
+  this.appId = opts && opts.appId || appId;
+  this.appVersionId = opts && opts.appVersionId || appVersionId;
 
   this.host = opts && opts.host || 'mws.amazonservices.com';
   this.port = opts && opts.port || 443
@@ -72,7 +76,7 @@ Client.prototype.request = function(requestData, callback) {
     options.headers['User-Agent'] = requestData.headers['User-Agent'];
   } else {
     // http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html (Creating the User-Agent header)
-    options.headers['User-Agent'] = appId + '/' + appVersionId + ' (Language=JavaScript)';
+    options.headers['User-Agent'] = this.appId + '/' + this.appVersionId + ' (Language=JavaScript)';
   }
 
   // Use specified Content-Type or assume one
