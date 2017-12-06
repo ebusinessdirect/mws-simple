@@ -101,7 +101,7 @@ Client.prototype.request = function(requestData, callback) {
 
     if (contentType.indexOf('/xml') !== -1) {
       xmlParser(body, function(err, result) { callback(err, result); });
-    } else if (contentType === 'text/plain') {
+    } else if (contentType.indexOf('text/plain') !== -1) {
       // Feed Processing Summaries are pure text data, not tab-delimited
       if (typeof body === 'string' && body.startsWith('Feed Processing Summary')) {
         callback(undefined, body);
