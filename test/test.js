@@ -24,14 +24,22 @@ describe('Sanity', () => {
         expect(new MWS()).to.be.instanceOf(MWS);
         done();
     });
-    it ('mws-simple configures default host and port correctly', (done) => {
-        const mws = new MWS({});
+    it ('mws-simple configures default host, port, appId, appVersionId correctly', (done) => {
+        const mws = new MWS();
         expect(mws).to.include.all.keys(
             'host',
             'port',
             'appId',
             'appVersionId',
         );
+        expect(mws.host).to.equal('mws.amazonservices.com');
+        expect(mws.port).to.equal(443);
+        expect(mws.appId).to.equal(packageInfo.name);
+        expect(mws.appVersionId).to.equal(packageInfo.version);
+        done();
+    });
+    it ('mws-simple defaults host, port, appId, appVersionId correctly when other paramaters are given', (done) => {
+        const mws = new MWS({ accessKeyId: 'test', secretAccessKey: 'test', merchantId: 'test' });
         expect(mws.host).to.equal('mws.amazonservices.com');
         expect(mws.port).to.equal(443);
         expect(mws.appId).to.equal(packageInfo.name);
