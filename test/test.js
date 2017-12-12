@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const MWS = require('..');
 const chai = require('chai');
 
@@ -114,6 +116,14 @@ describe('API tests', () => {
             mwsApi = new MWS(keys);
         }
     });
+    before(() => {
+        try {
+            fs.unlinkSync('./test-rawdata.txt');
+            fs.unlinkSync('./test-parseddata.txt');
+        } catch (err) {}
+        expect(fs.existsSync('./test-rawdata.txt')).to.equal(false);
+        expect(fs.existsSync('./test-parseddata.txt')).to.equal(false);
+    });
     // TODO: test response from bad API call:
     // {"ErrorResponse":{"$":{"xmlns":"https://mws.amazonservices.com/JunkTest/2011-07-01"},"Error":[{"Type":["Sender"],"Code":["InvalidAddress"],"Message":["Operation ListMarketplaces is not available for section Sellers/2011-07-01"]}],"RequestID":["736ecd92-d162-4094-9e33-4bf2d0c6bc9c"]}}
     it('test /Sellers/2011-07-01 ListMarketplaceParticipations', function test(done) {
@@ -143,6 +153,26 @@ describe('API tests', () => {
             expect(response.ResponseMetadata).to.be.an('array').with.lengthOf(1);
             done();
         });
+    });
+    it('test that debugOptions file writing works', function testFileWriting(done) {
+        const query = {
+            path: '/Sellers/2011-07-01',
+            query: {
+                Action: 'ListMarketplaceParticipations',
+                Version: '2011-07-01',
+            },
+        };
+        mwsApi.request(
+            query,
+            (err, result) => {
+                expect(fs.existsSync('./test-rawdata.txt')).to.equal(true);
+                expect(fs.existsSync('./test-parseddata.txt')).to.equal(true);
+                fs.unlinkSync('./test-rawdata.txt');
+                fs.unlinkSync('./test-parseddata.txt');
+                done();
+            },
+            { rawFile: './test-rawdata.txt', parsedFile: './test-parseddata.txt'}
+        );
     });
     it('test /Products/2011-10-01 GetLowestPricedOffersForASIN', function testLowestPricedOffersASIN(done) {
         const query = {
