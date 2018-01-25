@@ -126,6 +126,7 @@ describe('API tests', () => {
     });
     // TODO: test response from bad API call:
     // {"ErrorResponse":{"$":{"xmlns":"https://mws.amazonservices.com/JunkTest/2011-07-01"},"Error":[{"Type":["Sender"],"Code":["InvalidAddress"],"Message":["Operation ListMarketplaces is not available for section Sellers/2011-07-01"]}],"RequestID":["736ecd92-d162-4094-9e33-4bf2d0c6bc9c"]}}
+    // TODO: test error 503 response .. how? i guess smash an API hard until it throttles? ugh.
     it('test /Sellers/2011-07-01 ListMarketplaceParticipations', function test(done) {
         const query = {
             path: '/Sellers/2011-07-01',
@@ -135,7 +136,6 @@ describe('API tests', () => {
             },
         };
         mwsApi.request(query, (err, result) => {
-            // console.warn('* result=', JSON.stringify(result, null, 4));
             if (err) {
                 done(err);
                 return false;

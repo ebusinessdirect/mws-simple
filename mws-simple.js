@@ -93,7 +93,9 @@ MWSSimple.prototype.request = function(requestData, callback, debugOptions) {
             }
             if (error) return cb(error instanceof Error ? error : new Error(error));
             if (response.statusCode < 200 || response.statusCode > 299) {
-                return cb(new Error(response.statusCode + ' ' + response.statusMessage + ' ' + response.body));
+                const error = new Error(response.statusCode + ' ' + response.statusMessage + ' ' + response.body);
+                error.code = response.statusCode;
+                return cb(error);
             }
 
             let contentType = response.headers.hasOwnProperty('content-type') && response.headers['content-type'];
