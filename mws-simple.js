@@ -7,6 +7,15 @@ const packageInfo = require('./package.json');
 
 const { name: pkgAppId, version: pkgAppVersionId } = packageInfo; // pkgAppId=name, pkgAppVersionId=version
 
+class ServerError extends Error {
+    constructor(message, code, body) {
+        super(message);
+        if (Error.captureStackTrace) Error.captureStackTrace(this, ServerError);
+        this.code = code;
+        this.body = body;
+    }
+};
+
 function MWSSimple({ appId=pkgAppId, appVersionId=pkgAppVersionId, host='mws.amazonservices.com', port=443, accessKeyId, secretAccessKey, merchantId, authToken }={}) {
     // force 'new' constructor
     if (!(this instanceof MWSSimple)) return new MWSSimple(...arguments);
@@ -18,6 +27,8 @@ const syncWriteToFile = (file, data) => {
     const fs = require('fs');
     fs.writeFileSync(file, data);
 };
+
+MWSSimple.prototype.ServerError = ServerError;
 
 // http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html
 MWSSimple.prototype.request = function(requestData, callback, debugOptions) {
@@ -93,9 +104,7 @@ MWSSimple.prototype.request = function(requestData, callback, debugOptions) {
             }
             if (error) return cb(error instanceof Error ? error : new Error(error));
             if (response.statusCode < 200 || response.statusCode > 299) {
-                const error = new Error(response.statusCode + ' ' + response.statusMessage + ' ' + response.body);
-                error.code = response.statusCode;
-                return cb(error);
+                return cb(new ServerError(response.statusMessage, response.statusCode, response.body));
             }
 
             let contentType = response.headers.hasOwnProperty('content-type') && response.headers['content-type'];
