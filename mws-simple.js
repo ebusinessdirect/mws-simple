@@ -16,7 +16,7 @@ class ServerError extends Error {
     }
 };
 
-function MWSSimple({ appId=pkgAppId, appVersionId=pkgAppVersionId, host='mws.amazonservices.com', port=443, accessKeyId, secretAccessKey, merchantId, authToken }={}) {
+function MWSSimple({ appId = pkgAppId, appVersionId = pkgAppVersionId, host = 'mws.amazonservices.com', port = 443, accessKeyId, secretAccessKey, merchantId, authToken } = {}) {
     // force 'new' constructor
     if (!(this instanceof MWSSimple)) return new MWSSimple(...arguments);
     const args = { appId, appVersionId, host, port, accessKeyId, secretAccessKey, merchantId, authToken };
@@ -28,11 +28,11 @@ const syncWriteToFile = (file, data) => {
     fs.writeFileSync(file, data);
 };
 
-MWSSimple.prototype.ServerError = ServerError;
+MWSSimple.ServerError = ServerError;
 
 // http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html
-MWSSimple.prototype.request = function(requestData, callback, debugOptions) {
-  // Try to allow all assumptions to be overriden by caller if needed
+MWSSimple.prototype.request = function (requestData, callback, debugOptions) {
+    // Try to allow all assumptions to be overriden by caller if needed
     const requestDefaults = {
         path: '/',
         query: {
@@ -104,7 +104,7 @@ MWSSimple.prototype.request = function(requestData, callback, debugOptions) {
             }
             if (error) return cb(error instanceof Error ? error : new Error(error));
             if (response.statusCode < 200 || response.statusCode > 299) {
-                return cb(new ServerError(response.statusMessage, response.statusCode, response.body));
+                return cb(new MWSSimple.ServerError(response.statusMessage, response.statusCode, response.body));
             }
 
             let contentType = response.headers.hasOwnProperty('content-type') && response.headers['content-type'];
