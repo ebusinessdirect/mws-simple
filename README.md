@@ -81,6 +81,27 @@ mws.request(submitFeed, function(e, result) {
 });
 
 ```
+
+### Handling Errors:
+``` javascript
+const query = {
+    path: '/Test/TestErrorCall',
+    query: {
+        Action: 'TestForError',
+        Version: '2018-02-14',
+    },
+};
+mws.request(query, (err, result) => {
+    if (err instanceOf(mws.ServerError)) {
+      console.warn('** Server Error', err.message, err.code, err.body);
+    } else if (err) {
+      console.warn('** Other Error', err);
+    } else {
+      console.log('* Result', result);
+    }
+});
+```
+
 ## Contributing
 
 Yes, please!

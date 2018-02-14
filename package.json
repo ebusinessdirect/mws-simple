@@ -1,6 +1,6 @@
 {
   "name": "mws-simple",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "nodejs Amazon MWS API in ~100 lines of code",
   "main": "mws-simple.js",
   "dependencies": {
@@ -15,7 +15,7 @@
     "nyc": "^11.4.1"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --timeout=5000",
+    "test": "./node_modules/.bin/mocha --timeout=7000",
     "coverage": "./node_modules/.bin/nyc --reporter=lcov ./node_modules/.bin/mocha --timeout=5000"
   },
   "repository": {
