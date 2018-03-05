@@ -219,5 +219,35 @@ describe('API tests', () => {
             done();
         });
     });
+    it.only('test /Products/GetMyFeesEstimate', function testFeesEstimate(done) {
+        const query = {
+            path: '/Products/2011-10-01',
+            query: {
+                Action: 'GetMyFeesEstimate',
+                Version: '2011-10-01',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.MarketplaceId': 'ATVPDKIKX0DER',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.IdType': 'ASIN',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.IdValue': 'B002KT3XQM',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.IsAmazonFulfilled': 'true',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.Identifier': 'request1',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.PriceToEstimateFees.ListingPrice.CurrencyCode': 'USD',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.PriceToEstimateFees.ListingPrice.Amount': '30.00',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.PriceToEstimateFees.Shipping.CurrencyCode': 'USD',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.PriceToEstimateFees.Shipping.Amount': '3.99',
+                'FeesEstimateRequestList.FeesEstimateRequest.1.PriceToEstimateFees.Points.PointsNumber': '0',
+            },
+        };
+        mwsApi.request(query, (err, result) => {
+            // console.warn('* err=', err);
+            // console.warn('* result=', result);
+            expect(result).to.be.an('object').and.contain.key('GetMyFeesEstimateResponse');
+            const response = result.GetMyFeesEstimateResponse;
+            expect(response).to.be.an('object').and.contain.keys(
+                '$',
+                'GetMyFeesEstimateResult',
+                'ResponseMetadata'
+            );
+        });
+    });
     // TODO: write a tester that uses a report that is guaranteed to be available, to test basic report pull functionality
 });
