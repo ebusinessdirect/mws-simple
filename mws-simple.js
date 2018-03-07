@@ -21,14 +21,13 @@ function MWSSimple({ appId = pkgAppId, appVersionId = pkgAppVersionId, host = 'm
     if (!(this instanceof MWSSimple)) return new MWSSimple(...arguments);
     const args = { appId, appVersionId, host, port, accessKeyId, secretAccessKey, merchantId, authToken };
     Object.assign(this, args);
+    this.ServerError = ServerError;
 }
 
 const syncWriteToFile = (file, data) => {
     const fs = require('fs');
     fs.writeFileSync(file, data);
 };
-
-MWSSimple.ServerError = ServerError;
 
 // http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html
 MWSSimple.prototype.request = function (requestData, callback, debugOptions) {
@@ -86,6 +85,7 @@ MWSSimple.prototype.request = function (requestData, callback, debugOptions) {
         body: newRequestData.feedContent,
     };
 
+    // process.exit();
     // pass debugOptions into a new function scope, so that it doesn't get overridden at a later
     // point, if another request with different debugOptions is made before this request comes back.
     // that makes sense, right?
@@ -104,7 +104,7 @@ MWSSimple.prototype.request = function (requestData, callback, debugOptions) {
             }
             if (error) return cb(error instanceof Error ? error : new Error(error));
             if (response.statusCode < 200 || response.statusCode > 299) {
-                return cb(new MWSSimple.ServerError(response.statusMessage, response.statusCode, response.body));
+                return cb(new ServerError(response.statusMessage, response.statusCode, response.body));
             }
 
             let contentType = response.headers.hasOwnProperty('content-type') && response.headers['content-type'];

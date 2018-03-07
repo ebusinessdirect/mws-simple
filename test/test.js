@@ -82,16 +82,20 @@ describe('Sanity', () => {
     });
 });
 
-let keys;
+let keys = {};
 try {
     keys = require('./keys.json');
 } catch(err) {
+    keys.accessKeyId = process.env.MWS_ACCESS_KEY;
+    keys.secretAccessKey = process.env.MWS_SECRET_ACCESS_KEY;
+    keys.merchantId = process.env.MWS_MERCHANT_ID;
 }
 
 let SkipAPITests = false;
 
 if (!keys || !keys.accessKeyId || !keys.secretAccessKey || !keys.merchantId) {
     SkipAPITests = true;
+    console.warn('* API keys are missing, skipping live API call tests');
 }
 
 describe('Requirements to perform API tests', () => {
@@ -219,7 +223,7 @@ describe('API tests', () => {
             done();
         });
     });
-    it.only('test /Products/GetMyFeesEstimate', function testFeesEstimate(done) {
+    it('test /Products/GetMyFeesEstimate', function testFeesEstimate(done) {
         const query = {
             path: '/Products/2011-10-01',
             query: {
@@ -247,6 +251,7 @@ describe('API tests', () => {
                 'GetMyFeesEstimateResult',
                 'ResponseMetadata'
             );
+            done();
         });
     });
     // TODO: write a tester that uses a report that is guaranteed to be available, to test basic report pull functionality
