@@ -82,16 +82,20 @@ describe('Sanity', () => {
     });
 });
 
-let keys;
+let keys = {};
 try {
     keys = require('./keys.json');
 } catch(err) {
+    keys.accessKeyId = process.env.MWS_ACCESS_KEY;
+    keys.secretAccessKey = process.env.MWS_SECRET_ACCESS_KEY;
+    keys.merchantId = process.env.MWS_MERCHANT_ID;
 }
 
 let SkipAPITests = false;
 
 if (!keys || !keys.accessKeyId || !keys.secretAccessKey || !keys.merchantId) {
     SkipAPITests = true;
+    console.warn('* API keys are missing, skipping live API call tests');
 }
 
 describe('Requirements to perform API tests', () => {
