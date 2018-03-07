@@ -1,17 +1,24 @@
 {
   "name": "mws-simple",
-  "version": "1.0.2",
-  "description": "nodejs Amazon MWS API in 100 lines of code",
+  "version": "2.2.1",
+  "description": "nodejs Amazon MWS API in ~100 lines of code",
   "main": "mws-simple.js",
   "dependencies": {
-    "csv-parse": "^1.1.1",
-    "query-string": "^4.1.0",
+    "csv-parse": "^2.0.0",
+    "query-string": "^5.1.0",
     "request": "^2.72.0",
     "xml2js": "^0.4.16"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "coveralls": "^3.0.0",
+    "mocha": "^5.0.0",
+    "mocha-lcov-reporter": "^1.3.0",
+    "nyc": "^11.4.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --timeout=7000",
+    "coverage": "./node_modules/.bin/nyc --reporter=lcov ./node_modules/.bin/mocha --timeout=5000"
   },
   "repository": {
     "type": "git",
@@ -29,5 +36,8 @@
   "bugs": {
     "url": "https://github.com/ebusinessdirect/mws-simple/issues"
   },
-  "homepage": "https://github.com/ebusinessdirect/mws-simple#readme"
+  "homepage": "https://github.com/ebusinessdirect/mws-simple#readme",
+  "contributors": [
+    "Eric Blade <blade.eric@gmail.com> (http://www.ericblade.us/phpbb/)"
+  ]
 }

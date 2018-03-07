@@ -1,111 +1,132 @@
-/*
- * mws-simple.js: nodejs Amazon MWS API in 100 lines of code
- */
-'use strict';
-let crypto = require('crypto');
-let request = require('request');
-let xmlParser = require('xml2js').parseString;
-let tabParser = require('csv-parse');
-let qs = require('query-string');
+const crypto = require('crypto');
+const request = require('request');
+const xmlParser = require('xml2js').parseString;
+const tabParser = require('csv-parse');
+const qs = require('query-string');
+const packageInfo = require('./package.json');
 
-// Client is the class constructor
-module.exports = Client;
+const { name: pkgAppId, version: pkgAppVersionId } = packageInfo; // pkgAppId=name, pkgAppVersionId=version
 
-// Used for User-Agent header
-let appId = 'mws-simple';
-let appVersionId = '1.0.0';
+class ServerError extends Error {
+    constructor(message, code, body) {
+        super(message);
+        if (Error.captureStackTrace) Error.captureStackTrace(this, ServerError);
+        this.code = code;
+        this.body = body;
+    }
+};
 
-function Client(opts) {
-  // force 'new' constructor
-  if (!(this instanceof Client)) return new Client(opts);
-
-  this.host = opts.host || 'mws.amazonservices.com';
-  this.port = opts.port || 443
-
-  if (opts.accessKeyId) this.accessKeyId = opts.accessKeyId;
-  if (opts.secretAccessKey) this.secretAccessKey = opts.secretAccessKey;
-  if (opts.merchantId) this.merchantId = opts.merchantId;
+function MWSSimple({ appId = pkgAppId, appVersionId = pkgAppVersionId, host = 'mws.amazonservices.com', port = 443, accessKeyId, secretAccessKey, merchantId, authToken } = {}) {
+    // force 'new' constructor
+    if (!(this instanceof MWSSimple)) return new MWSSimple(...arguments);
+    const args = { appId, appVersionId, host, port, accessKeyId, secretAccessKey, merchantId, authToken };
+    Object.assign(this, args);
 }
 
-//
-// http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html
-//
-Client.prototype.request = function(requestData, callback) {
-  // Try to allow all assumptions to be overriden by caller if needed
-  if (!requestData.path) {
-    requestData.path = '/';
-  }
-  if (!requestData.query.Timestamp) {
-    requestData.query.Timestamp = (new Date()).toISOString();
-  }
-  if (!requestData.query.AWSAccessKeyId) {
-    requestData.query.AWSAccessKeyId = this.accessKeyId;
-  }
-  if (!requestData.query.SellerId) {
-    requestData.query.SellerId = this.merchantId;
-  }
-  if (!requestData.responseFormat) {
-    requestData.responseFormat = 'xml';
-  }
-
-  // Create the Canonicalized Query String
-  requestData.query.SignatureMethod = 'HmacSHA256';
-  requestData.query.SignatureVersion = '2';
-  // qs.stringify will sorts the keys and url encode
-  let stringToSign = ["POST", this.host, requestData.path, qs.stringify(requestData.query)].join('\n');
-  requestData.query.Signature = crypto.createHmac('sha256', this.secretAccessKey).update(stringToSign).digest('base64');
-
-  let options = {
-    url: 'https://' + this.host + ':' + this.port + requestData.path,
-    headers: {
-      Host: this.host,
-    },
-    qs: requestData.query
-  }
-
-  // Use specified User-Agent or assume one
-  if (requestData.headers && requestData.headers['User-Agent']) {
-    options.headers['User-Agent'] = requestData.headers['User-Agent'];
-  } else {
-    // http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html (Creating the User-Agent header)
-    options.headers['User-Agent'] = appId + '/' + appVersionId + ' (Language=JavaScript)';
-  }
-
-  // Use specified Content-Type or assume one
-  if (requestData.headers && requestData.headers['Content-Type']) {
-    options.headers['Content-Type'] = requestData.headers['Content-Type'];
-  } else if (requestData.feedContent) {
-    if (requestData.feedContent.slice(0, 5) === '<?xml') {
-      options.headers['Content-Type'] = 'text/xml';
-    } else {
-      options.headers['Content-Type'] = 'text/tab-separated-values; charset=iso-8859-1';
-    }
-  } else {
-    options.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
-  }
-
-  // Add body content if any
-  if (requestData.feedContent) {
-    options.body = requestData.feedContent;
-    options.headers['Content-MD5'] = crypto.createHash('md5').update(requestData.feedContent).digest('base64');
-  }
-
-  // Make call to MWS
-  request.post(options, function (error, response, body) {
-    if (error) return callback(error);
-
-    if (response.headers.hasOwnProperty('content-type') && response.headers['content-type'].startsWith('text/xml')) {
-      // xml2js
-      xmlParser(body, function (err, result) {
-        callback(err, result);
-      });
-    } else {
-      // currently only other type of data returned is tab-delimited text
-      tabParser(body, {
-        delimiter:'\t',
-        columns: true,
-        relax: true
-      }, callback);
-    }
-  });
+const syncWriteToFile = (file, data) => {
+    const fs = require('fs');
+    fs.writeFileSync(file, data);
 };
+
+MWSSimple.ServerError = ServerError;
+
+// http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html
+MWSSimple.prototype.request = function (requestData, callback, debugOptions) {
+    // Try to allow all assumptions to be overriden by caller if needed
+    const requestDefaults = {
+        path: '/',
+        query: {
+            Timestamp: (new Date()).toISOString(),
+            AWSAccessKeyId: this.accessKeyId,
+            SellerId: this.merchantId,
+            responseFormat: 'xml',
+            MWSAuthToken: this.authToken,
+        },
+    };
+    const newRequestData = {
+        ...requestDefaults,
+        ...requestData,
+        query: {
+            ...requestDefaults.query,
+            ...requestData.query,
+            SignatureMethod: 'HmacSHA256',
+            SignatureVersion: '2',
+        },
+    };
+
+    // Create the Canonicalized Query String
+    // qs.stringify will sort the keys and url encode
+    const stringToSign = ['POST', this.host, newRequestData.path, qs.stringify(newRequestData.query)].join('\n');
+    newRequestData.query.Signature = crypto.createHmac('sha256', this.secretAccessKey).update(stringToSign).digest('base64');
+
+    // Use specified Content-Type or assume one
+    let contentType = newRequestData.headers && newRequestData.headers['Content-Type'];
+    if (!contentType) {
+        if (newRequestData.feedContent) {
+            if (newRequestData.feedContent.slice(0, 5) === '<?xml') {
+                contentType = 'text/xml';
+            } else {
+                contentType = 'text/tab-separated-values; charset=iso-8859-1';
+            }
+        } else {
+            contentType = 'application/x-www-form-urlencoded; charset=utf-8';
+        }
+    }
+
+    const options = {
+        url: `https://${this.host}:${this.port}${newRequestData.path}`,
+        headers: {
+            Host: this.host,
+            // http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html (Creating the User-Agent header)
+            'User-Agent': `${newRequestData.headers && newRequestData.headers['User-Agent'] || this.appId}/${this.appVersionId} (Language=Javascript)`,
+            'Content-Type': contentType,
+            'Content-MD5': newRequestData.feedContent ? crypto.createHash('md5').update(newRequestData.feedContent).digest('base64') : undefined,
+        },
+        form: newRequestData.query,
+        body: newRequestData.feedContent,
+    };
+
+    // pass debugOptions into a new function scope, so that it doesn't get overridden at a later
+    // point, if another request with different debugOptions is made before this request comes back.
+    // that makes sense, right?
+    // do same for callback, so callbacks end up in the expected location, perhaps will solve
+    // the problem with outputs being weird in reporting functions in mws-advanced.
+    ((debug = {}, cb) => {
+        function logDataDoCallback(err, result, file, data) {
+            if (file) {
+                syncWriteToFile(file, data);
+            }
+            cb(err, result);
+        }
+        request.post(options, function (error, response, body) {
+            if (debug.rawFile) {
+                syncWriteToFile(debug.rawFile, `\nerror= ${error}\nresponse= ${JSON.stringify(response)}\nbody= ${body}\n`);
+            }
+            if (error) return cb(error instanceof Error ? error : new Error(error));
+            if (response.statusCode < 200 || response.statusCode > 299) {
+                return cb(new MWSSimple.ServerError(response.statusMessage, response.statusCode, response.body));
+            }
+
+            let contentType = response.headers.hasOwnProperty('content-type') && response.headers['content-type'];
+            if (contentType.indexOf('/xml') !== -1) {
+                xmlParser(body, (err, result) => logDataDoCallback(err, result, debug.parsedFile, `\nerror=${err}\nresult=${JSON.stringify(result)}\n`));
+            } else if (contentType.indexOf('text/plain') !== -1) {
+                // Feed Processing Summaries are pure text data, not tab-delimited
+                if (typeof body === 'string' && (body.indexOf('\t') === -1 || body.startsWith('Feed Processing Summary'))) {
+                    logDataDoCallback(undefined, body, debug.parsedFile, `\nbody=${body}\n`);
+                } else {
+                    tabParser(body, {
+                        delimiter: '\t',
+                        columns: true,
+                        relax: true
+                    }, (err, result) => logDataDoCallback(err, result, debug.parsedFile, `\nerror=${err}\nresult=${JSON.stringify(result)}\n`));
+                }
+            } else {
+                console.warn('**** mws-simple: unknown content-type', contentType);
+                logDataDoCallback(undefined, body, debug.parsedFile, `\nbody=${body}\n`);
+            }
+        });
+    })(debugOptions, callback);
+};
+
+module.exports = MWSSimple;
