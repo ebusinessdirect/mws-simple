@@ -18,7 +18,8 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --timeout=7000",
-    "coverage": "./node_modules/.bin/nyc --reporter=lcov ./node_modules/.bin/mocha --timeout=5000"
+    "coverage": "./node_modules/.bin/nyc --reporter=lcov ./node_modules/.bin/mocha --timeout=5000",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
