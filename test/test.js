@@ -219,7 +219,7 @@ describe('API tests', () => {
             done();
         });
     });
-    it.only('test /Products/GetMyFeesEstimate', function testFeesEstimate(done) {
+    it('test /Products/GetMyFeesEstimate', function testFeesEstimate(done) {
         const query = {
             path: '/Products/2011-10-01',
             query: {
