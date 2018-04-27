@@ -230,7 +230,7 @@ describe('API tests', () => {
                 Action: 'SubmitFeed',
                 Version: '2009-01-01',
                 'MarketplaceIdList.Id.1': 'ATVPDKIKX0DER',
-                FeedType: '_POST_INVENTORY_AVAILABILITY_DATA_',
+                FeedType: '_POST_FLAT_FILE_PRICEANDQUANTITYONLY_UPDATE_DATA_',
             },
         };
         const submitFeed = {
@@ -238,7 +238,6 @@ describe('API tests', () => {
             ...query,
         };
         mwsApi.request(submitFeed, function(err, res) {
-            console.warn('**** res', JSON.stringify(res));
             expect(err).to.be.null;
             expect(res).to.be.an('object').with.keys(
                 [ 'SubmitFeedResponse', ],
