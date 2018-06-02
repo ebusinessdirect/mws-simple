@@ -223,7 +223,7 @@ describe('API tests', () => {
             done();
         });
     });
-    it.only('test SubmitFeed', function testSubmitFees(done) {
+    it('test SubmitFeed', function testSubmitFees(done) {
         const query = {
             path: '/Feeds/2009-01-01',
             query: {
