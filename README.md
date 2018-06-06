@@ -43,6 +43,29 @@ For uploading data to MWS, populate `feedContent` with a `buffer` of data.
 
 ###### Invoke `request` with your request object.
 
+````
+mws.request(requestObj, function (err, res, headers) {
+  ....
+});
+````
+
+###### Check your error, response, and headers
+
+Note that there are three arguments that should be used for the callback:
+
+- err: any error information returned
+- res: the response information
+- headers: any headers returned from the call
+
+If you receive an error, you will not likely receive anything other than undefined or null for res.
+Most requests should supply headers.  Headers that a developer may be particularly interested in are
+for throttling information -- per the MWS API throttling documentation,
+https://docs.developer.amazonservices.com/en_UK/dev_guide/DG_Throttling.html
+for functions that have Hourly Request Quotas (Products, Reports, Feeds), you will receive throttle
+information in the headers: x-mws-quota-max, x-mws-quota-remaining, x-mws-quota-resetsOn
+(note that it seems that either the documentation is wrong, or some layer inbetween is changing
+the names to all lower-case, so x-mws-quota-resetsOn is actually x-mws-quota-resetson)
+
 ## Examples
 
 ### List Orders (open and created in last 24 hours):
@@ -63,7 +86,8 @@ let listOrders = {
   }
 }
 
-mws.request(listOrders, function(e, result) {
+mws.request(listOrders, function(e, result, headers) {
+  console.log(JSON.stringify(headers));
   console.log(JSON.stringify(result));
 });
 ```
@@ -113,7 +137,9 @@ Yes, please!
 
 Thank you!
 
+* [ericblade](https://github.com/ericblade) Eric Blade
 * [tomjnsn](https://github.com/tomjnsn) Tom Jensen
+* [ebusinessdirect](https://github.com/ebusinessdirect) Original Author
 
 ## License
 

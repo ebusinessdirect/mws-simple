@@ -99,7 +99,7 @@ if (!keys || !keys.accessKeyId || !keys.secretAccessKey || !keys.merchantId) {
 }
 
 describe('Requirements to perform API tests', () => {
-    if ('a valid keys.json file is in the test directory or keys available in environment', (done) => {
+    it('a valid keys.json file is in the test directory or keys available in environment', (done) => {
         expect(keys,
             'please provide a keys.json file with accessKeyId, secretAccessKey, and merchantId, or set MWS_ACCESS_KEY, MWS_SECRET_ACCESS_KEY, MWS_MERCHANT_ID in environment'
         ).to.include.all.keys(
@@ -147,6 +147,21 @@ describe('API tests', () => {
             done();
         });
     });
+    // we generally don't use this call because it has an extremely low throttle rate, according to the docs.
+    // it('GetServiceStatus', function testThrottle(done) {
+    //     const query = {
+    //         path: '/Sellers/GetServiceStatus',
+    //         query: {
+    //             Action: 'GetServiceStatus',
+    //             Version: '2011-07-01',
+    //         },
+    //     };
+    //     mwsApi.request(query, (err, res) => {
+    //         console.warn('**** err', JSON.stringify(err, null, 4));
+    //         console.warn('***** res', JSON.stringify(res, null, 4));
+    //         done();
+    //     });
+    // });
     it('test /Sellers/2011-07-01 ListMarketplaceParticipations', function test(done) {
         const query = {
             path: '/Sellers/2011-07-01',
@@ -155,12 +170,16 @@ describe('API tests', () => {
                 Version: '2011-07-01',
             },
         };
-        mwsApi.request(query, (err, result) => {
+        mwsApi.request(query, (err, result, headers) => {
             if (err) {
                 done(err);
                 return false;
             }
             expect(result).to.be.an('object').and.contain.key('ListMarketplaceParticipationsResponse');
+            expect(headers).to.be.an('object');
+            expect(headers['x-mws-request-id']).to.exist;
+            expect(headers['x-mws-timestamp']).to.exist;
+            expect(headers['x-mws-response-context']).to.exist;
             const response = result.ListMarketplaceParticipationsResponse;
             expect(response).to.be.an('object').and.contain.keys(
                 '$',
@@ -205,7 +224,7 @@ describe('API tests', () => {
                 ItemCondition: 'New',
             },
         };
-        mwsApi.request(query, (err, result) => {
+        mwsApi.request(query, (err, result, headers) => {
             if (err) {
                 done(err);
                 return;
@@ -213,6 +232,10 @@ describe('API tests', () => {
             // Array length 0 = problem https://github.com/ericblade/mws-simple/issues/1
             expect(result).to.not.be.an('array');
             expect(result).to.be.an('object').and.contain.key('GetLowestPricedOffersForASINResponse');
+            expect(headers).to.be.an('object');
+            expect(headers['x-mws-quota-max']).to.exist;
+            expect(headers['x-mws-quota-remaining']).to.exist;
+            expect(headers['x-mws-quota-resetson']).to.exist;
             const response = result.GetLowestPricedOffersForASINResponse;
             expect(response).to.be.an('object').and.contain.keys(
                 '$',
