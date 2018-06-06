@@ -94,13 +94,13 @@ MWSSimple.prototype.request = function (requestData, callback, debugOptions) {
     // do same for callback, so callbacks end up in the expected location, perhaps will solve
     // the problem with outputs being weird in reporting functions in mws-advanced.
     ((debug = {}, cb) => {
-        function logDataDoCallback(err, result, file, data) {
-            if (file) {
-                syncWriteToFile(file, data);
-            }
-            cb(err, result);
-        }
         request.post(options, function (error, response, body) {
+            function logDataDoCallback(err, result, file, data) {
+                if (file) {
+                    syncWriteToFile(file, data);
+                }
+                cb(err, result, response.headers);
+            }
             if (debug.rawFile) {
                 syncWriteToFile(debug.rawFile, `\nerror= ${error}\nresponse= ${JSON.stringify(response)}\nbody= ${body}\n`);
             }
