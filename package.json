@@ -4,7 +4,7 @@
   "description": "nodejs Amazon MWS API in ~100 lines of code",
   "main": "mws-simple.js",
   "dependencies": {
-    "csv-parse": "^2.2.0",
+    "csv-parse": "^3.0.0",
     "query-string": "^6.0.0",
     "request": "^2.85.0",
     "xml2js": "^0.4.16"
