@@ -139,8 +139,14 @@ describe('API tests', () => {
                 Version: '2018-02-14',
             },
         };
-        mwsApi.request(query, (err, result) => {
+        mwsApi.request(query, (err, result, headers) => {
             expect(err).to.be.an.instanceOf(mwsApi.ServerError);
+            expect(result).to.equal(undefined);
+            expect(headers).to.be.an('object').that.has.keys([
+                'server', 'date', 'content-type', 'content-length', 'connection',
+                'x-mws-request-id', 'x-mws-timestamp', 'x-mws-response-context', 'x-amz-rid',
+                'vary',
+            ]);
             expect(err.message).to.equal('Not Found');
             expect(err.code).to.equal(404);
             expect(err.body).to.be.a('string');
@@ -176,10 +182,11 @@ describe('API tests', () => {
                 return false;
             }
             expect(result).to.be.an('object').and.contain.key('ListMarketplaceParticipationsResponse');
-            expect(headers).to.be.an('object');
-            expect(headers['x-mws-request-id']).to.exist;
-            expect(headers['x-mws-timestamp']).to.exist;
-            expect(headers['x-mws-response-context']).to.exist;
+            expect(headers).to.be.an('object').that.has.keys([
+                'server', 'date', 'content-type', 'content-length', 'connection',
+                'x-mws-request-id', 'x-mws-timestamp', 'x-mws-response-context', 'x-amz-rid',
+                'vary', 'x-amz-date', 'x-amzn-authorization',
+            ]);
             const response = result.ListMarketplaceParticipationsResponse;
             expect(response).to.be.an('object').and.contain.keys(
                 '$',
@@ -232,10 +239,13 @@ describe('API tests', () => {
             // Array length 0 = problem https://github.com/ericblade/mws-simple/issues/1
             expect(result).to.not.be.an('array');
             expect(result).to.be.an('object').and.contain.key('GetLowestPricedOffersForASINResponse');
-            expect(headers).to.be.an('object');
-            expect(headers['x-mws-quota-max']).to.exist;
-            expect(headers['x-mws-quota-remaining']).to.exist;
-            expect(headers['x-mws-quota-resetson']).to.exist;
+            expect(headers).to.be.an('object').that.has.keys([
+                'server', 'date', 'content-type', 'connection',
+                'x-mws-request-id', 'x-mws-timestamp', 'x-mws-response-context', 'x-amz-rid',
+                'vary',
+                'transfer-encoding', 'x-mws-quota-max', 'x-mws-quota-remaining',
+                'x-mws-quota-resetson',
+            ]);
             const response = result.GetLowestPricedOffersForASINResponse;
             expect(response).to.be.an('object').and.contain.keys(
                 '$',
