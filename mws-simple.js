@@ -104,9 +104,9 @@ MWSSimple.prototype.request = function (requestData, callback, debugOptions) {
             if (debug.rawFile) {
                 syncWriteToFile(debug.rawFile, `\nerror= ${error}\nresponse= ${JSON.stringify(response)}\nbody= ${body}\n`);
             }
-            if (error) return cb(error instanceof Error ? error : new Error(error));
+            if (error) return cb(error instanceof Error ? error : new Error(error), undefined, response.headers);
             if (response.statusCode < 200 || response.statusCode > 299) {
-                return cb(new ServerError(response.statusMessage, response.statusCode, response.body));
+                return cb(new ServerError(response.statusMessage, response.statusCode, response.body), undefined, response.headers);
             }
 
             let contentType = response.headers.hasOwnProperty('content-type') && response.headers['content-type'];
