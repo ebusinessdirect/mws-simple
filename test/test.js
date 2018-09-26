@@ -12,11 +12,6 @@ describe('Sanity', () => {
         expect(true).to.equal(true);
         done();
     });
-    it ('mws-simple returns a new mws object when called directly', (done) => {
-        const mws = MWS({ accessKeyId: 'test', secretAccessKey: 'test', merchantId: 'test' });
-        expect(mws).to.be.instanceOf(MWS).and.not.equal(MWS);
-        done();
-    });
     it ('mws-simple returns a new mws object when instantiated with new', (done) => {
         const mws = new MWS({ accessKeyId: 'test', secretAccessKey: 'test', merchantId: 'test' });
         expect(mws).to.be.instanceOf(MWS).and.not.equal(MWS);
