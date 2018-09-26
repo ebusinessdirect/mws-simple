@@ -3,7 +3,7 @@
 
 [![Join the chat at https://gitter.im/mws-advanced/Lobby](https://badges.gitter.im/mws-advanced/Lobby.svg)](https://gitter.im/mws-advanced/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-nodejs Amazon MWS API in (about) 100 lines of code
+nodejs Amazon MWS API in (about) 150 lines of code
 
 which means that you will have to do more work in order to make api calls but gives you the most control.  Response uses xml2js or csv-parse for conversion.
 
@@ -12,7 +12,7 @@ you may want to have a look at mws-advanced: http://www.github.com/ericblade/mws
 
 Defaults to US marketplace settings, but can code to override default
 
-v2 branch requires node v8 or v9, tested with v8.9.4 and higher. Use v1 branch if you require
+v2,v3 branches requires node v8 or v9, tested with v8.9.4 and higher. Use v1 branch if you require
 older versions of node for some reason.
 
 ## Installation
