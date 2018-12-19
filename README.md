@@ -131,7 +131,27 @@ mws.request(query, (err, result) => {
 
 ## Contributing
 
-Yes, please!
+Yes, please! ;-)
+
+### Running tests
+
+There is a small set of mocha tests in test/test.js.  Any changes that you make, please run the
+tests to ensure that everything still works.  As the tests actually hit the Amazon MWS servers, you
+need to supply your authorization credentials to the tests.  You can place them in test/keys.json,
+like
+````
+{
+    "accessKeyId": "AKIA....",
+    "secretAccessKey": "POF...",
+    "merchantId": "A3..."
+}
+````
+
+then run ````npm test```` to run the tests.
+If you make any functionality changes, please ensure that you have updated any relevant tests, or
+created any new ones that would be necessary to test your code.
+
+Thank you! :-)
 
 ## Contributors
 
