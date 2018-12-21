@@ -12,7 +12,7 @@ you may want to have a look at mws-advanced: http://www.github.com/ericblade/mws
 
 Defaults to US marketplace settings, but can code to override default
 
-v2,v3 branches requires node v8 or v9, tested with v8.9.4 and higher. Use v1 branch if you require
+v2 and master branches requires node v8 or v9, tested with v8.9.4 and higher. Use v1 branch if you require
 older versions of node for some reason.
 
 ## Installation
@@ -41,21 +41,34 @@ If the API has an endpoint as specified in the documentation, put the endpoint i
 
 For uploading data to MWS, populate `feedContent` with a `buffer` of data.
 
-###### Invoke `request` with your request object.
+###### Invoke `request` with your request object
+###### [Callback]
 
 ````
-mws.request(requestObj, function (err, res, headers) {
+mws.request(requestObj, function (err, {res, headers}) {
   ....
 });
 ````
 
+###### [Promise]
+````
+mws.request(requestObj)
+  .then(({result, headers}) => {
+    ....
+  })
+  .catch(error => {
+    ....
+  });
+````
+
 ###### Check your error, response, and headers
 
-Note that there are three arguments that should be used for the callback:
+Note that there are two arguments that should be used for the callback:
 
 - err: any error information returned
-- res: the response information
-- headers: any headers returned from the call
+- result object:
+  - res: the response information
+  - headers: any headers returned from the call
 
 If you receive an error, you will not likely receive anything other than undefined or null for res.
 Most requests should supply headers.  Headers that a developer may be particularly interested in are
@@ -86,10 +99,18 @@ let listOrders = {
   }
 }
 
-mws.request(listOrders, function(e, result, headers) {
+// Callback:
+mws.request(listOrders, function(e, {result, headers}) {
   console.log(JSON.stringify(headers));
   console.log(JSON.stringify(result));
 });
+
+// Promise:
+mws.request(listOrders)
+  .then(({result, headers}) => {
+    console.log(JSON.stringify(headers));
+    console.log(JSON.stringify(result));
+  });
 ```
 
 ### Submit Shipments File:
@@ -104,8 +125,16 @@ let submitFeed = {
     FeedType: '_POST_FLAT_FILE_FULFILLMENT_DATA_'
   }
 };
-mws.request(submitFeed, function(e, result) {
+
+// Callback
+mws.request(submitFeed, function(e, {result, headers}) {
 });
+
+// Promise
+mws.request(submitFeed)
+  .then(({result, headers}) => {
+    ...
+  });
 
 ```
 
@@ -118,7 +147,9 @@ const query = {
         Version: '2018-02-14',
     },
 };
-mws.request(query, (err, result) => {
+
+// Callback
+mws.request(query, (err, {result, headers}) => {
     if (err instanceOf(mws.ServerError)) {
       console.warn('** Server Error', err.message, err.code, err.body);
     } else if (err) {
@@ -127,6 +158,18 @@ mws.request(query, (err, result) => {
       console.log('* Result', result);
     }
 });
+
+// Promise
+mws.request(query)
+  .catch(err => {
+    if (err instanceof mws.ServerError) {
+      console.warn('** Server Error', err.message, err.code, err.body);
+    } else if (err) {
+      console.warn('** Other Error', err);
+    } else {
+      console.log('* Result', result);
+    }
+  });
 ```
 
 ## Contributing
@@ -157,9 +200,10 @@ Thank you! :-)
 
 Thank you!
 
+* [avrtau](https://github.com/avrtau) Avraham Tauberman
 * [ericblade](https://github.com/ericblade) Eric Blade
 * [tomjnsn](https://github.com/tomjnsn) Tom Jensen
-* [ebusinessdirect](https://github.com/ebusinessdirect) Original Author
+* [ebusinessdirect](https://github.com/ebusinessdirect) Original Author, Roger Endo
 
 ## License
 
