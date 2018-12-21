@@ -9,7 +9,7 @@ const { name: pkgAppId, version: pkgAppVersionId } = require('./package.json'); 
 class MWSSimple {
     constructor({ appId = pkgAppId, appVersionId = pkgAppVersionId, host = 'mws.amazonservices.com', port = 443, accessKeyId, secretAccessKey, merchantId, authToken } = {}) {
         Object.assign(this, { appId, appVersionId, host, port, accessKeyId, secretAccessKey, merchantId, authToken, ServerError });
-        
+
         // allows to use this inside the request method
         this.request = this.request.bind(this);
     }
@@ -20,11 +20,12 @@ class MWSSimple {
 
         // if no callback specified return a Promise
         if (callback === undefined) {
-            return new Promise ((resolve, reject) => {
-                self(requestData, (err, result) => {
-                    err ? reject(err) : resolve(result);
-                });
-            });
+            return new
+                Promise(
+                    (resolve, reject) => self(
+                        requestData, (err, result) => (err ? reject(err) : resolve(result)),
+                    ),
+                );
         }
 
         const requestDefaults = {
@@ -69,7 +70,7 @@ class MWSSimple {
             headers: {
                 Host: this.host,
                 // http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html (Creating the User-Agent header)
-                'User-Agent': `${newRequestData.headers && newRequestData.headers['User-Agent'] || this.appId}/${this.appVersionId} (Language=Javascript)`,
+                'User-Agent': `${(newRequestData.headers && newRequestData.headers['User-Agent']) || this.appId}/${this.appVersionId} (Language=Javascript)`,
                 'Content-Type': contentType,
                 'Content-MD5': newRequestData.feedContent ? crypto.createHash('md5').update(newRequestData.feedContent).digest('base64') : undefined,
             },
@@ -77,8 +78,8 @@ class MWSSimple {
             body: newRequestData.feedContent,
         };
 
-        makeRequest(options, debugOptions, callback);
-    };
+        return makeRequest(options, debugOptions, callback);
+    }
 }
 
 module.exports = MWSSimple;
