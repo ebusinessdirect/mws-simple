@@ -5,7 +5,7 @@
 
 nodejs Amazon MWS API in (about) 150 lines of code
 
-which means that you will have to do more work in order to make api calls but gives you the most control.  Response uses xml2js or csv-parse for conversion.
+Which means that you will have to do more work in order to make api calls but gives you the most control.  Response uses xml2js or csv-parse for conversion.
 
 If you are looking to do something with MWS, but not involve yourself in all the raw data handling,
 you may want to have a look at mws-advanced: http://www.github.com/ericblade/mws-advanced
@@ -17,7 +17,7 @@ older versions of node for some reason.
 
 ## Installation
 
-npm install mws-simple
+npm install @ericblade/mws-simple
 
 ## Usage
 
