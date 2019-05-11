@@ -256,7 +256,9 @@ describe('API tests', () => {
                 'server', 'date', 'content-type', 'connection',
                 'x-mws-request-id', 'x-mws-timestamp', 'x-mws-response-context', 'x-amz-rid',
                 'vary',
-                'content-length', 'x-mws-quota-max', 'x-mws-quota-remaining',
+                // 'content-length', // removed by amazon at some point? conditional?
+                'transfer-encoding',
+                'x-mws-quota-max', 'x-mws-quota-remaining',
                 'x-mws-quota-resetson',
             ]);
             const response = result.GetLowestPricedOffersForASINResponse;
