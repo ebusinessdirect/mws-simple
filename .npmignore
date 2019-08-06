@@ -1,0 +1,4 @@
+send-coverage.cmd
+test/*
+feed.js
+test-report.js
