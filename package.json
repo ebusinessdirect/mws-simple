@@ -34,7 +34,7 @@
   "scripts": {
     "build": "npx tsc",
     "test": "npm run build && npx mocha --timeout=12000",
-    "coverage": "npx nyc --reporter=lcov npx test",
+    "coverage": "npx nyc --reporter=lcov npm run test",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {

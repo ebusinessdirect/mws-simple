@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const MWS = require('..');
+const MWS = require('..').default;
 const chai = require('chai');
 
 const expect = chai.expect;
@@ -136,7 +136,7 @@ describe('API tests', () => {
         };
         mwsApi.request(query, (err, { result, headers }) => {
             expect(err).to.be.an.instanceOf(mwsApi.ServerError);
-            expect(result).to.equal(undefined);
+            expect(result).to.equal(null);
             expect(headers).to.be.an('object').that.has.keys([
                 'server', 'date', 'content-type', 'content-length', 'connection',
                 'x-mws-request-id', 'x-mws-timestamp', 'x-mws-response-context', 'x-amz-rid',

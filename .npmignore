@@ -1,4 +1,5 @@
 send-coverage.cmd
 test/*
+src/*
 feed.js
 test-report.js

@@ -1,3 +1,4 @@
+lib/*
 test/keys.json
 
 # Logs
@@ -58,4 +59,3 @@ typings/
 
 # dotenv environment variables file
 .env
-lib/
