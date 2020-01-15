@@ -3,4 +3,14 @@ node_js:
   - "10"
   - "12"
   - "13"
-after_success: 'npm run coverage && npm run coveralls'
+script: 'npm run coverage'
+after_success: 'npm run coveralls'
+jobs:
+  include:
+    - stage: release
+      node_js: lts/*
+      deploy:
+        provider: script
+        skip_cleanup: true
+        script:
+          - npx semantic-release
