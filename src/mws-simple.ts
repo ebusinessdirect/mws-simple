@@ -1,31 +1,76 @@
-const crypto = require('crypto');
-const ServerError = require('./lib/ServerError');
-const makeRequest = require('./lib/makeRequest');
-const makeSignature = require('./lib/makeSignature');
-const getContentType = require('./lib/getContentType');
+import { IncomingHttpHeaders } from 'http';
+import crypto from 'crypto';
+import { ConstructorParams, DebugOptions } from './types/MWSSimple.d';
+import ServerError from './ServerError';
+import makeRequest from './makeRequest';
+import makeSignature from './makeSignature';
+import getContentType from './getContentType';
 
-const { name: pkgAppId, version: pkgAppVersionId } = require('./package.json'); // pkgAppId=name, pkgAppVersionId=version
+const { name: pkgAppId, version: pkgAppVersionId } = require('../package.json');
 
 class MWSSimple {
-    constructor({ appId = pkgAppId, appVersionId = pkgAppVersionId, host = 'mws.amazonservices.com', port = 443, accessKeyId, secretAccessKey, merchantId, authToken } = {}) {
-        Object.assign(this, { appId, appVersionId, host, port, accessKeyId, secretAccessKey, merchantId, authToken, ServerError });
+    accessKeyId: string = '';
+
+    appId: string = '';
+
+    appVersionId: string = '';
+
+    merchantId: string = '';
+
+    authToken: string = '';
+
+    host: string = '';
+
+    port: number;
+
+    secretAccessKey: string = '';
+
+    constructor({
+        appId = pkgAppId,
+        appVersionId = pkgAppVersionId,
+        host = 'mws.amazonservices.com',
+        port = 443,
+        accessKeyId,
+        secretAccessKey,
+        merchantId,
+        authToken,
+    }: ConstructorParams = {}) {
+        Object.assign(this, {
+            appId,
+            appVersionId,
+            host,
+            port,
+            accessKeyId,
+            secretAccessKey,
+            merchantId,
+            authToken,
+            ServerError,
+        });
 
         // allows to use this inside the request method
         this.request = this.request.bind(this);
     }
 
     // http://docs.developer.amazonservices.com/en_US/dev_guide/DG_ClientLibraries.html
-    request(requestData, callback, debugOptions) {
+    request(
+        requestData: any, // TODO: this should NOT be any.
+        // TODO: how can i put this messy callback line into a .d.ts and import it, so both this
+        // and makeRequest can use it?
+        callback?: (
+            err: Error | null,
+            results: { result?: any, headers: IncomingHttpHeaders }
+        ) => void,
+        debugOptions?: DebugOptions,
+    ) : Promise<any> | void {
         const self = this.request;
 
         // if no callback specified return a Promise
         if (callback === undefined) {
-            return new
-                Promise(
-                    (resolve, reject) => self(
-                        requestData, (err, result) => (err ? reject(err) : resolve(result)),
-                    ),
-                );
+            return new Promise(
+                (resolve, reject) => self(
+                    requestData, (err: Error, result: any) => (err ? reject(err) : resolve(result)),
+                ),
+            );
         }
 
         const requestDefaults = {
@@ -63,7 +108,8 @@ class MWSSimple {
             contentType = getContentType(newRequestData.feedContent);
         }
 
-        // queryFieldName === qs for querystring, or form for form. mws errors if you post feedContent with form.
+        // queryFieldName === qs for querystring, or form for form. mws errors if you post
+        // feedContent with form.
         const queryFieldName = newRequestData.feedContent ? 'qs' : 'form';
         const options = {
             url: `https://${this.host}:${this.port}${newRequestData.path}`,
@@ -82,4 +128,5 @@ class MWSSimple {
     }
 }
 
-module.exports = MWSSimple;
+export { MWSSimple };
+export default MWSSimple;
